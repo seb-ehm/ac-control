@@ -1,0 +1,169 @@
+/* Global styles for the app */
+.app-container {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+}
+
+/* Login container */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 16px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+.login-input {
+    width: calc(100% - 1.5rem); /* Adjust width to account for padding */
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #555;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.login-container h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+/* Devices container */
+.devices-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.device-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.device {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.device-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.device-name {
+    font-weight: bold;
+    font-size: 0.875rem;
+    color: #333;
+}
+
+.temperature-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.set-temp-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.set-temp {
+    font-size: 0.875rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.temp-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.temp-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp-button:hover {
+    background-color: #0056b3;
+}
+
+.power-on,
+.power-off {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.power-off {
+    background-color: #dc3545;
+}
+
+.power-on:hover,
+.power-off:hover {
+    opacity: 0.9;
+}
