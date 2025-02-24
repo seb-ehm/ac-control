@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
 import {AdjustTemperature, GetDevices, Login, TogglePower} from "../wailsjs/go/main/App";
-
+import{comfortcloud} from "../wailsjs/go/models"
 import "./App.css";
 import { Sofa } from "lucide-react";
 
-interface Device {
-    name: string;
-    indoorTemp: number;
-    outdoorTemp: number;
-    power: boolean;
-    setTemp: number;
-}
+
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [devices, setDevices] = useState<Device[]>([]);
+    const [devices, setDevices] = useState<comfortcloud.Device[]>([]);
     const [loginError, setLoginError] = useState("");
+
+    // Check login status on component mount
+    useEffect(() => {
+        const checkLogin = async () => {
+            const isLoggedIn = await Login("","");
+            if (isLoggedIn) {
+                setLoggedIn(true);
+                fetchDevices(); // Fetch devices if already logged in
+            }
+        };
+        checkLogin();
+    }, []);
 
     useEffect(() => {
         if (loggedIn) {
@@ -36,7 +42,9 @@ function App() {
     };
 
     const fetchDevices = async () => {
-        const data: Device[] = await GetDevices();
+        const data: comfortcloud.Device[] = await GetDevices();
+        console.log("Setting devices")
+        console.log(data)
         setDevices(data);
     };
 
@@ -83,16 +91,16 @@ function App() {
                     <div className="device" key={index}>
                         {/* Device Info */}
                         <div className="device-info">
-                            <span className="device-name">{device.name}</span>
+                            <span className="device-name">{device.deviceName}</span>
                             <div className="temperature-info">
-                                <span className="current-temp">🏠 {device.indoorTemp.toFixed(1)}°C</span>
-                                <span className="weather-temp">🌤️ {device.outdoorTemp.toFixed(1)}°C</span>
+                                <span className="current-temp">🏠 {device.parameters.insideTemperature.toFixed(1)}°C</span>
+                                <span className="weather-temp">🌤️ {device.parameters.outTemperature.toFixed(1)}°C</span>
                             </div>
                         </div>
 
                         {/* Set Temperature Control */}
                         <div className="set-temp-control">
-                            <span className="set-temp">Set: {device.setTemp.toFixed(1)}°C</span>
+                            <span className="set-temp">Set: {device.parameters.temperatureSet.toFixed(1)}°C</span>
                             <div className="temp-buttons">
                                 <button className="temp-button" onClick={() => adjustTemperature(index, 1)}>+</button>
                                 <button className="temp-button" onClick={() => adjustTemperature(index, -1)}>-</button>
@@ -101,10 +109,10 @@ function App() {
 
                         {/* Power Button */}
                         <button
-                            className={device.power ? "power-on" : "power-off"}
+                            className={device.parameters.operate ? "power-on" : "power-off"}
                             onClick={() => togglePower(index)}
                         >
-                            {device.power ? "Turn Off" : "Turn On"}
+                            {device.parameters.operate ? "Turn Off" : "Turn On"}
                         </button>
                     </div>
                 ))}

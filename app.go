@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/seb-ehm/panasonic-comfort-cloud/comfortcloud"
+	"log/slog"
 )
 
 type App struct {
@@ -12,7 +12,7 @@ type App struct {
 	password string
 	loggedIn bool
 	client   *comfortcloud.Client
-	devices  []Device
+	devices  []comfortcloud.Device
 }
 
 type Device struct {
@@ -24,13 +24,7 @@ type Device struct {
 }
 
 func NewApp() *App {
-	return &App{
-		devices: []Device{
-			{"Living Room", 22.5, 15.0, true, 23.0},
-			{"Bedroom", 21.0, 13.5, false, 22.0},
-			{"Office", 24.0, 16.0, true, 24.5},
-		},
-	}
+	return &App{}
 }
 
 func (a *App) Login(username, password string) bool {
@@ -43,19 +37,38 @@ func (a *App) Login(username, password string) bool {
 	return true
 }
 
-func (a *App) GetDevices() []Device {
-	return a.devices
+func (a *App) GetDevices() []comfortcloud.Device {
+	devices, err := a.client.GetDevices()
+
+	if err == nil {
+		a.devices = devices
+		return devices
+	}
+	return nil
 }
 
 func (a *App) TogglePower(index int) {
 	if index >= 0 && index < len(a.devices) {
-		a.devices[index].Power = !a.devices[index].Power
+		device := a.devices[index]
+		var err error
+		if device.Parameters.Operate == comfortcloud.PowerOn {
+			err = a.client.SetDevice(device.DeviceGuid, comfortcloud.WithPower(comfortcloud.PowerOff))
+		} else {
+			err = a.client.SetDevice(device.DeviceGuid, comfortcloud.WithPower(comfortcloud.PowerOn))
+		}
+		if err != nil {
+			slog.Error("failed to toggle power: %w", err)
+		}
 	}
 }
 
-func (a *App) AdjustTemperature(index int, delta float32) {
+func (a *App) AdjustTemperature(index int, delta float64) {
 	if index >= 0 && index < len(a.devices) {
-		a.devices[index].SetTemp += delta
+		device := a.devices[index]
+		err := a.client.SetDevice(device.DeviceGuid, comfortcloud.WithTemperature(device.Parameters.TemperatureSet+delta))
+		if err != nil {
+			slog.Error("failed to adjust temperature: %w", err)
+		}
 	}
 }
 
@@ -63,14 +76,11 @@ func (a *App) AdjustTemperature(index int, delta float32) {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	fmt.Println("Starting comfort cloud client")
 	client := comfortcloud.NewClient("", "", tokenFile)
 	client, needsLogin := NeedsLogin(client)
 	if needsLogin {
 		a.loggedIn = false
-		fmt.Println("Log in needed")
 	} else {
-		fmt.Println("Log in logged in")
 		a.loggedIn = true
 		a.client = client
 	}
