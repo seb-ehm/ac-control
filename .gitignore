@@ -26,3 +26,4 @@ go.work.sum
 .env
 .panasonic-oauth-token
 .DS_Store
+.aider*
