@@ -31,6 +31,7 @@ func (a *App) Login(username, password string) bool {
 	a.client = comfortcloud.NewClient(username, password, tokenFile)
 	err := a.client.Login()
 	if err != nil {
+		slog.Error("Login failed: %v", err)
 		return false
 	}
 	a.loggedIn = true
@@ -39,12 +40,12 @@ func (a *App) Login(username, password string) bool {
 
 func (a *App) GetDevices() []comfortcloud.Device {
 	devices, err := a.client.GetDevices()
-
-	if err == nil {
-		a.devices = devices
-		return devices
+	if err != nil {
+		slog.Error("Failed to get devices: %v", err)
+		return nil
 	}
-	return nil
+	a.devices = devices
+	return devices
 }
 
 func (a *App) TogglePower(index int) {
@@ -57,7 +58,7 @@ func (a *App) TogglePower(index int) {
 			err = a.client.SetDevice(device.DeviceGuid, comfortcloud.WithPower(comfortcloud.PowerOn))
 		}
 		if err != nil {
-			slog.Error("failed to toggle power: %w", err)
+			slog.Error("failed to toggle power: %v", err)
 		}
 	}
 }
@@ -67,7 +68,7 @@ func (a *App) AdjustTemperature(index int, delta float64) {
 		device := a.devices[index]
 		err := a.client.SetDevice(device.DeviceGuid, comfortcloud.WithTemperature(device.Parameters.TemperatureSet+delta))
 		if err != nil {
-			slog.Error("failed to adjust temperature: %w", err)
+			slog.Error("failed to adjust temperature: %v", err)
 		}
 	}
 }
